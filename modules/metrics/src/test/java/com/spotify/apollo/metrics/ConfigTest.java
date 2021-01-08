@@ -43,8 +43,18 @@ public class ConfigTest {
 
       assertEquals(Optional.empty(), ffwdCompletelyEmpty.getHost());
       assertEquals(Optional.empty(), ffwdCompletelyEmpty.getPort());
+      assertEquals(Boolean.FALSE, ffwdCompletelyEmpty.getFlush());
       assertEquals(30, ffwdCompletelyEmpty.getInterval());
       assertEquals(30, ffwdEmpty.getInterval());
+    }
+
+    @Test
+    public void agentConfigWithFlush() {
+      String ffwdjson = "{\"ffwd\":{\"flush\":\"true\"}}";
+      FfwdConfig.Agent ffwdFlush = (FfwdConfig.Agent) FfwdConfig.fromConfig(conf(ffwdjson));
+
+      assertEquals(30, ffwdFlush.getInterval());
+      assertEquals(Boolean.TRUE, ffwdFlush.getFlush());
     }
 
     @Test
@@ -58,6 +68,22 @@ public class ConfigTest {
       final FfwdConfig.Http http = (FfwdConfig.Http) config;
 
       assertEquals(30, http.getInterval());
+      assertEquals(Boolean.FALSE, http.getFlush());
+    }
+
+    @Test
+    public void httpConfigWithFlush() {
+      String json =
+          "{\"ffwd\":{\"type\":\"http\",\"flush\":\"true\",\"discovery\":{\"type\":\"srv\","
+          + "\"record\":\"hello\"}}}";
+      FfwdConfig config = FfwdConfig.fromConfig(conf(json));
+
+      assertEquals(FfwdConfig.Http.class, config.getClass());
+
+      final FfwdConfig.Http http = (FfwdConfig.Http) config;
+
+      assertEquals(30, http.getInterval());
+      assertEquals(Boolean.TRUE, http.getFlush());
     }
 
     @Test
